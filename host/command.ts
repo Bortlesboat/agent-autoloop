@@ -45,8 +45,10 @@ export function commandLine(argv: string[]): [string, string[]] {
   if (!path.isAbsolute(program)) program = findOnPath(program) ?? program;
   if (/\.cmd$/i.test(program)) {
     const shim = readFileSync(program, "utf8");
-    const entry = /"%(?:dp0%|~dp0)\\?([^"\r\n]+\.(?:[cm]?js))"\s+%\*/i.exec(shim);
+    const entry = /"%(?:dp0%|~dp0)\\?([^"\r\n]+\.(?:[cm]?js|exe))"\s+%\*/i.exec(shim);
     if (!entry) throw new Error(`不能直接运行 ${program}：请在 command 写可执行文件，或用 node 运行脚本。`);
+    // A package whose bin is a native program (Claude Code from npm) gets a shim that runs it with no node in front.
+    if (/\.exe$/i.test(entry[1])) return [path.resolve(path.dirname(program), entry[1]), argv.slice(1)];
     const adjacentNode = path.join(path.dirname(program), "node.exe");
     return [
       existsSync(adjacentNode) ? adjacentNode : process.execPath,
