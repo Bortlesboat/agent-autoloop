@@ -1,4 +1,5 @@
-// Node cannot exec a Windows npm .cmd shim. Run its JavaScript entry directly so multiline arguments never become cmd source.
+// Node cannot exec a Windows npm .cmd shim. Run what it points at (a JavaScript entry or a native program) directly so
+// multiline arguments never become cmd source.
 import { execFile, execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
